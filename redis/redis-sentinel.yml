@@ -6,7 +6,7 @@ networks:
 
 services: 
     redis:
-        image: 'bitnami/redis:latest'
+        image: 'bitnami/redis:6.0'
         restart: always
         environment: 
           - ALLOW_EMPTY_PASSWORD=yes
@@ -14,28 +14,30 @@ services:
         networks:
           - app-tier
         ports:
-          - 6379
-    redis-slave:
-        image: 'bitnami/redis:latest'
-        restart: always
-        environment:
-          - REDIS_REPLICATION_MODE=slave
-          - REDIS_MASTER_HOST=redis
-          - ALLOW_EMPTY_PASSWORD=yes
-        ports:
-          - 6379
-        depends_on:
-          - redis
-        networks:
-          - app-tier
+          - 6379:6379
+    # redis-slave:
+    #     image: 'bitnami/redis:latest'
+    #     restart: always
+    #     environment:
+    #       - REDIS_REPLICATION_MODE=slave
+    #       - REDIS_MASTER_HOST=localhost
+    #       - ALLOW_EMPTY_PASSWORD=yes
+    #     ports:
+    #       - 6378:6378
+    #     depends_on:
+    #       - redis
+    #     networks:
+    #       - app-tier
     redis-sentinel:
         image: 'bitnami/redis-sentinel:latest'
         environment:
           - ALLOW_EMPTY_PASSWORD=yes
+          - REDIS_MASTER_HOST=localhost
         depends_on:
           - redis
-          - redis-slave
+          # - redis-slave
         ports:
-          - '26379-26381:26379'
+          # - '26379-26381:26379-26381'
+          - 26379:26379
         networks:
           - app-tier
